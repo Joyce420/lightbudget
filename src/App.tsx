@@ -20,6 +20,15 @@ import {
   upsertCloudTransaction,
 } from './services/cloudData';
 
+function describeError(error: unknown): string {
+  if (error instanceof Error) return `${error.name}: ${error.message}`;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'home' | 'statistics' | 'settings'>('home');
   const [transactions, setTransactions] = useState<Transaction[]>(() => loadTransactions());
@@ -51,7 +60,7 @@ export default function App() {
     void operation()
       .then(() => setCloudSyncState('synced'))
       .catch((error) => {
-        console.error(failureMessage, error);
+        console.error(`${failureMessage}: ${describeError(error)}`);
         setCloudSyncState('error');
         showToast(`${failureMessage}，数据已保存在本机`);
       });
@@ -70,7 +79,7 @@ export default function App() {
       })
       .catch((error) => {
         if (!active) return;
-        console.error('Cloud initialization failed', error);
+        console.error(`Cloud initialization failed: ${describeError(error)}`);
         setCloudSyncState('error');
         showToast('云端连接失败，已继续使用本机账本');
       });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Transaction, AppSettings } from './types';
+import { Transaction, AppSettings, CloudSyncState } from './types';
 import {
   loadTransactions,
   saveTransactions,
@@ -11,11 +11,22 @@ import { StatisticsScreen } from './components/StatisticsScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 import { BottomNav } from './components/BottomNav';
 import { RecordModal } from './components/RecordModal';
+import { isCloudConfigured } from './lib/supabase';
+import {
+  clearCloudData,
+  deleteCloudTransaction,
+  initializeCloudData,
+  upsertCloudSettings,
+  upsertCloudTransaction,
+} from './services/cloudData';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'home' | 'statistics' | 'settings'>('home');
   const [transactions, setTransactions] = useState<Transaction[]>(() => loadTransactions());
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
+  const [cloudSyncState, setCloudSyncState] = useState<CloudSyncState>(
+    isCloudConfigured ? 'connecting' : 'local',
+  );
   
   // Active month/year follows the user device local date by default.
   const now = new Date();
@@ -33,6 +44,43 @@ export default function App() {
     setToastMessage(msg);
     setToastVisible(true);
   };
+
+  const runCloudWrite = (operation: () => Promise<void>, failureMessage: string) => {
+    if (!isCloudConfigured) return;
+    setCloudSyncState('connecting');
+    void operation()
+      .then(() => setCloudSyncState('synced'))
+      .catch((error) => {
+        console.error(failureMessage, error);
+        setCloudSyncState('error');
+        showToast(`${failureMessage}，数据已保存在本机`);
+      });
+  };
+
+  useEffect(() => {
+    if (!isCloudConfigured) return;
+    let active = true;
+
+    void initializeCloudData(transactions, settings)
+      .then((cloudData) => {
+        if (!active) return;
+        setTransactions(cloudData.transactions);
+        setSettings(cloudData.settings);
+        setCloudSyncState('synced');
+      })
+      .catch((error) => {
+        if (!active) return;
+        console.error('Cloud initialization failed', error);
+        setCloudSyncState('error');
+        showToast('云端连接失败，已继续使用本机账本');
+      });
+
+    return () => {
+      active = false;
+    };
+    // Cloud hydration must run once per app launch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!toastVisible) return;
@@ -82,21 +130,26 @@ export default function App() {
       id: `tx-${Date.now()}`,
     };
     setTransactions((prev) => [created, ...prev]);
+    runCloudWrite(() => upsertCloudTransaction(created), '云端记账失败');
     showToast(`记账成功 - ${newTx.category} ¥${newTx.amount.toFixed(2)}`);
   };
 
   const handleDeleteTransaction = (id: string) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
+    runCloudWrite(() => deleteCloudTransaction(id), '云端删除失败');
     showToast('已删除该笔记账');
   };
 
   const handleUpdateSettings = (newSettings: Partial<AppSettings>) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
+    const nextSettings = { ...settings, ...newSettings };
+    setSettings(nextSettings);
+    runCloudWrite(() => upsertCloudSettings(nextSettings), '云端设置同步失败');
   };
 
   const handleClearAllData = () => {
     setTransactions([]);
-    localStorage.removeItem('lightbudget_transactions_v1');
+    localStorage.removeItem('lightbudget_transactions_v3');
+    runCloudWrite(clearCloudData, '云端数据清空失败');
     showToast('已清空全部本地数据');
   };
 
@@ -134,6 +187,7 @@ export default function App() {
             onUpdateSettings={handleUpdateSettings}
             onClearData={handleClearAllData}
             showToast={showToast}
+            cloudSyncState={cloudSyncState}
           />
         )}
       </main>

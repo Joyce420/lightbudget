@@ -36,3 +36,5 @@ export interface MonthSummary {
   budgetRemaining: number;
   remainingDays: number;
 }
+
+export type CloudSyncState = 'local' | 'connecting' | 'synced' | 'error';

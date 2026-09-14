@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppSettings, Transaction } from '../types';
+import { AppSettings, CloudSyncState, Transaction } from '../types';
 import { APP_LOGO_URL, ACCOUNT_OPTIONS, DEFAULT_EXPENSE_CATEGORIES } from '../data/initialData';
 import { exportTransactionsToCSV, formatCurrency } from '../utils/helpers';
 
@@ -9,6 +9,7 @@ interface SettingsScreenProps {
   onUpdateSettings: (newSettings: Partial<AppSettings>) => void;
   onClearData: () => void;
   showToast: (msg: string) => void;
+  cloudSyncState: CloudSyncState;
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
@@ -17,6 +18,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onUpdateSettings,
   onClearData,
   showToast,
+  cloudSyncState,
 }) => {
   const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState(String(settings.monthlyBudget || 4500));
@@ -69,7 +71,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
       {/* Main Content */}
       <div className="flex flex-col w-full max-w-[430px] mx-auto px-5 pb-6 gap-5">
-        {/* Local Storage & Privacy Banner */}
+        {/* Storage & Privacy Banner */}
         <div className="relative overflow-hidden rounded-2xl bg-surface-container p-4 shadow-sm mt-2 border border-border-subtle/50">
           <div className="absolute -right-4 -bottom-6 w-28 h-28 rounded-full bg-secondary-container/30 pointer-events-none blur-xl" />
           <div className="flex items-center gap-3">
@@ -81,15 +83,31 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-[18px] font-bold text-primary tracking-tight truncate">
-                  本机账本
+                  {cloudSyncState === 'synced' ? '云端账本' : '本机账本'}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[12px] font-semibold">
-                  离线优先
+                  {cloudSyncState === 'synced'
+                    ? '已同步'
+                    : cloudSyncState === 'connecting'
+                      ? '同步中'
+                      : cloudSyncState === 'error'
+                        ? '待重试'
+                        : '离线优先'}
                 </span>
               </div>
               <p className="text-[13px] text-muted-text mt-0.5 flex items-center gap-1 truncate">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                已安全保存在本地 · 无需注册
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    cloudSyncState === 'error' ? 'bg-expense-danger' : 'bg-secondary'
+                  }`}
+                />
+                {cloudSyncState === 'synced'
+                  ? '本机与云端均已安全保存'
+                  : cloudSyncState === 'connecting'
+                    ? '正在连接安全云端…'
+                    : cloudSyncState === 'error'
+                      ? '云端暂不可用 · 本机数据不受影响'
+                      : '已安全保存在本地 · 配置后可云同步'}
               </p>
             </div>
           </div>
@@ -363,10 +381,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[15px] text-on-surface font-medium truncate">
-                    隐私与本地存储说明
+                    隐私与数据存储说明
                   </span>
                   <span className="text-[12px] text-muted-text leading-snug mt-0.5 line-clamp-2">
-                    当前版本的数据保存在本机。清除浏览器数据可能导致数据丢失，请定期导出备份。
+                    {cloudSyncState === 'synced'
+                      ? '数据采用本机与云端双重保存，并按用户身份隔离。'
+                      : '数据优先保存在本机，请定期导出备份。'}
                   </span>
                 </div>
               </div>
@@ -560,10 +580,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               <span className="material-symbols-outlined text-primary text-[22px]">
                 verified_user
               </span>
-              <h3 className="text-[16px] font-bold text-primary">隐私与本地存储</h3>
+              <h3 className="text-[16px] font-bold text-primary">隐私与数据存储</h3>
             </div>
             <p className="text-[13px] text-muted-text leading-relaxed mb-4">
-              轻记账采用真正的离线优先架构，所有流水数据仅加密存储在您的设备本地浏览器（LocalStorage）。无需绑定手机号或注册账号，绝不向第三方服务器上传您的私密记账账单。
+              轻记账采用离线优先架构，流水会先保存在设备本地。启用云同步后，数据会通过加密连接保存到 Supabase，并使用行级权限按当前身份隔离；未配置云端时不会上传任何账单。
               <br />
               <br />
               请定期在「数据管理」中导出 CSV 备份，以便长期保存。
@@ -585,7 +605,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <div className="bg-surface rounded-2xl p-5 max-w-sm w-full shadow-2xl border border-border-subtle">
             <h3 className="text-[16px] font-bold text-expense-danger mb-2">确定清空全部数据？</h3>
             <p className="text-[13px] text-muted-text mb-4">
-              此操作将清除本地存储的所有流水记录并恢复至空白账本，不可撤销。
+              此操作将清除本机及已连接云端的全部流水记录并恢复至空白账本，不可撤销。
             </p>
             <div className="flex gap-2">
               <button

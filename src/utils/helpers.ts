@@ -1,5 +1,5 @@
 import { Transaction, AppSettings } from '../types';
-import { INITIAL_TRANSACTIONS, DEFAULT_SETTINGS } from '../data/initialData';
+import { DEFAULT_SETTINGS } from '../data/initialData';
 
 const STORAGE_KEY_TX = 'lightbudget_transactions_v3';
 const STORAGE_KEY_SETTINGS = 'lightbudget_settings_v1';
@@ -7,16 +7,16 @@ const STORAGE_KEY_SETTINGS = 'lightbudget_settings_v1';
 export function loadTransactions(): Transaction[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY_TX);
-    if (saved) {
+    if (saved !== null) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     }
   } catch (e) {
     console.error('Failed to load transactions from localStorage', e);
   }
-  return INITIAL_TRANSACTIONS;
+  return [];
 }
 
 export function saveTransactions(transactions: Transaction[]): void {

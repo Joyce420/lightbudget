@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #002521;
+  --color-primary-container: #103c36;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #7ca79e;
+  --color-primary-fixed: #bfebe2;
+  --color-primary-fixed-dim: #a4cfc6;
+  
+  --color-secondary: #4e6700;
+  --color-secondary-container: #caf167;
+  --color-secondary-fixed: #caf167;
+  --color-secondary-fixed-dim: #afd44d;
+  --color-on-secondary-fixed: #151f00;
+  --color-on-secondary-container: #536d00;
+  
+  --color-tertiary: #002618;
+  --color-tertiary-container: #003e2a;
+  --color-tertiary-fixed: #9cf4ca;
+  --color-tertiary-fixed-dim: #80d8af;
+  --color-tertiary-fixed-variant: #005138;
+  --color-on-tertiary-container: #57ae88;
+  
+  --color-background: #f8faf4;
+  --color-on-background: #191c19;
+  
+  --color-surface: #ffffff;
+  --color-on-surface: #191c19;
+  --color-on-surface-variant: #404846;
+  --color-surface-dim: #d9dbd5;
+  --color-surface-bright: #f8faf4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4ee;
+  --color-surface-container: #edefe9;
+  --color-surface-container-high: #e7e9e3;
+  --color-surface-container-highest: #e1e3dd;
+  --color-surface-variant: #e1e3dd;
+  --color-surface-tint: #3d665f;
+  
+  --color-outline: #717976;
+  --color-outline-variant: #c0c8c5;
+  --color-muted-text: #6D7B76;
+  --color-expense-danger: #E85D4A;
+  --color-border-subtle: #E5E9DF;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+}
+
+@layer base {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    background-color: #f8faf4;
+    color: #191c19;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Hide scrollbars */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+
+@supports (height: 100dvh) {
+  html, body, #root { height: 100dvh; }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  #btn-save-record { height: 42px; }
+  #keypad-del-btn, #btn-save-record ~ * button { min-height: 40px; }
+}

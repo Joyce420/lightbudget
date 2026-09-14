@@ -1,0 +1,6 @@
+{
+  "name": "轻记账 LightBudget",
+  "description": "清新克制的个人记账与月度预算管理应用，包含收支记账、分类统计、趋势图表与本地离线存储。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

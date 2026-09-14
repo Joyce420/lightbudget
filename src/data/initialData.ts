@@ -1,7 +1,6 @@
 import { CategoryItem, Transaction, AppSettings } from '../types';
 
-export const APP_LOGO_URL =
-  'https://lh3.googleusercontent.com/aida/AEtjO1WHsLD0xJprKSEc3L2whP_olw9bqxGhaVSqLYXVeSIgHRHy9PzIAp7T9HsJ8B-mlrvOsubKrQf6mj93flyuOw7fOk4zj7f9UfJUekalsOrsd4chJg7rsi33jwHo4koAqDlzIQZuJVjF-JJtsPUSQZ7RRHd4fnUr9LPVeBhhZ6Jv6w5ZXwgjgmnDHXWji1RKSZ7fW-aa6Z3i8hqCrsiOFeTPq-O3aK-QFlz-vWjbEoswlDdbe4xIQBBE2kc';
+export const APP_LOGO_URL = `${import.meta.env.BASE_URL}lightbudget-icon.png`;
 
 export const DEFAULT_SETTINGS: AppSettings = {
   monthlyBudget: 4500,

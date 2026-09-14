@@ -34,3 +34,12 @@ VITE_SUPABASE_ANON_KEY="你的公开 anon key"
 npm run lint
 npm run build
 ```
+
+## 安装到手机
+
+部署后的 HTTPS 地址可作为 PWA 安装：
+
+- iPhone：用 Safari 打开，点“分享” > “添加到主屏幕”。
+- Android：用 Chrome 打开，点菜单 > “安装应用”或“添加到主屏幕”。
+
+安装后会以独立窗口运行。已加载过的页面可离线打开；离线时记账先保存在本机，恢复网络后再次打开应用即可继续同步。

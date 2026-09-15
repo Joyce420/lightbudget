@@ -133,11 +133,21 @@ export default function App() {
     }
   };
 
+  const handleSelectMonth = (year: number, month: number) => {
+    setSelectedYear(year);
+    setSelectedMonth(month);
+  };
+
   const handleSaveNewTransaction = (newTx: Omit<Transaction, 'id'>) => {
     const created: Transaction = {
       ...newTx,
       id: `tx-${Date.now()}`,
     };
+    const createdDate = new Date(created.date);
+    if (!Number.isNaN(createdDate.getTime())) {
+      setSelectedYear(createdDate.getFullYear());
+      setSelectedMonth(createdDate.getMonth() + 1);
+    }
     setTransactions((prev) => [created, ...prev]);
     runCloudWrite(() => upsertCloudTransaction(created), '云端记账失败');
     showToast(`记账成功 - ${newTx.category} ¥${newTx.amount.toFixed(2)}`);
@@ -174,6 +184,7 @@ export default function App() {
             selectedMonth={selectedMonth}
             onPrevMonth={handlePrevMonth}
             onNextMonth={handleNextMonth}
+            onSelectMonth={handleSelectMonth}
             onDeleteTransaction={handleDeleteTransaction}
           />
         )}

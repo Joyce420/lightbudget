@@ -26,7 +26,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [categoriesDialogOpen, setCategoriesDialogOpen] = useState(false);
   const [currencyDialogOpen, setCurrencyDialogOpen] = useState(false);
-  const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
   const [purgeConfirmOpen, setPurgeConfirmOpen] = useState(false);
 
   const handleSaveBudget = () => {
@@ -370,7 +369,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             {/* 隐私声明 */}
             <button
               type="button"
-              onClick={() => setPrivacyDialogOpen(true)}
+              onClick={() => showToast('账单默认保存在本机；云同步状态见顶部提示')}
               className="flex items-center justify-between min-h-[64px] px-4 active:bg-surface-container-low transition-colors duration-150 text-left cursor-pointer"
             >
               <div className="flex items-center gap-3 min-w-0 pr-2">
@@ -567,33 +566,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               className="w-full py-2.5 rounded-xl bg-surface-container text-[14px] font-semibold text-primary"
             >
               取消
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Privacy Notice Modal */}
-      {privacyDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/45 backdrop-blur-[2px]">
-          <div className="bg-surface rounded-2xl p-5 max-w-sm w-full shadow-2xl border border-border-subtle">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-primary text-[22px]">
-                verified_user
-              </span>
-              <h3 className="text-[16px] font-bold text-primary">隐私与数据存储</h3>
-            </div>
-            <p className="text-[13px] text-muted-text leading-relaxed mb-4">
-              轻记账采用离线优先架构，流水会先保存在设备本地。启用云同步后，数据会通过加密连接保存到 Supabase，并使用行级权限按当前身份隔离；未配置云端时不会上传任何账单。
-              <br />
-              <br />
-              请定期在「数据管理」中导出 CSV 备份，以便长期保存。
-            </p>
-            <button
-              type="button"
-              onClick={() => setPrivacyDialogOpen(false)}
-              className="w-full py-2.5 rounded-xl bg-secondary-container text-primary font-bold text-[14px]"
-            >
-              我已知晓
             </button>
           </div>
         </div>

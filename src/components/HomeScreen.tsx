@@ -10,6 +10,7 @@ interface HomeScreenProps {
   selectedMonth: number;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  onSelectMonth: (year: number, month: number) => void;
   onDeleteTransaction: (id: string) => void;
 }
 
@@ -20,6 +21,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   selectedMonth,
   onPrevMonth,
   onNextMonth,
+  onSelectMonth,
   onDeleteTransaction,
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -182,7 +184,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <span className="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
 
-          <div className="flex items-center gap-1 cursor-pointer active:opacity-75 transition-opacity">
+          <label className="relative flex items-center gap-1 cursor-pointer active:opacity-75 transition-opacity">
+            <input
+              aria-label="选择月份"
+              type="month"
+              value={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}`}
+              onChange={(e) => {
+                const [year, month] = e.target.value.split('-').map(Number);
+                if (year && month) onSelectMonth(year, month);
+              }}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
             <span className="material-symbols-outlined text-secondary-container text-primary-container text-[18px]">
               calendar_today
             </span>
@@ -192,7 +204,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <span className="material-symbols-outlined text-muted-text text-[16px]">
               arrow_drop_down
             </span>
-          </div>
+          </label>
 
           <button
             id="next-month-btn"

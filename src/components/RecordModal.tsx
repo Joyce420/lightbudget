@@ -7,6 +7,25 @@ import {
   ACCOUNT_OPTIONS,
 } from '../data/initialData';
 
+function toDateTimeLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function formatRecordDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '选择时间';
+
+  const today = new Date();
+  const isToday = date.toDateString() === today.toDateString();
+  const time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  return isToday ? `今天 ${time}` : `${date.getMonth() + 1}月${date.getDate()}日 ${time}`;
+}
+
 interface RecordModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,7 +46,9 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   const [account, setAccount] = useState<string>(defaultAccount || '现金');
   const [remark, setRemark] = useState<string>('麦当劳超值双人套餐');
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<string>('今天 12:45');
+  const [selectedDateTime, setSelectedDateTime] = useState<string>(() =>
+    toDateTimeLocal(new Date()),
+  );
 
   const categories =
     type === 'expense' ? DEFAULT_EXPENSE_CATEGORIES : DEFAULT_INCOME_CATEGORIES;
@@ -71,13 +92,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
       return;
     }
 
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const hh = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    const dateStr = `${yyyy}-${mm}-${dd}T${hh}:${min}:00`;
+    const dateStr = `${selectedDateTime}:00`;
 
     onSave({
       type,
@@ -283,27 +298,23 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                 </div>
 
                 {/* Date Pill */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const now = new Date();
-                    setSelectedDate(
-                      `今天 ${now.getHours().toString().padStart(2, '0')}:${now
-                        .getMinutes()
-                        .toString()
-                        .padStart(2, '0')}`,
-                    );
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-primary cursor-pointer active:scale-95 transition-transform"
-                >
+                <label className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-primary cursor-pointer active:scale-95 transition-transform">
                   <span className="material-symbols-outlined text-[16px] text-muted-text">
                     calendar_today
                   </span>
-                  <span className="text-[13px]">{selectedDate}</span>
+                  <span className="text-[13px]">{formatRecordDate(selectedDateTime)}</span>
                   <span className="material-symbols-outlined text-[14px] text-muted-text">
                     expand_more
                   </span>
-                </button>
+                  <input
+                    id="record-date-input"
+                    type="datetime-local"
+                    value={selectedDateTime}
+                    onChange={(event) => setSelectedDateTime(event.target.value)}
+                    aria-label="选择记账日期和时间"
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  />
+                </label>
               </div>
 
               {/* Remark Note Input */}

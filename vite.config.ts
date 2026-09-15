@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: process.env.GITHUB_ACTIONS ? '/lightbudget/' : '/',
+    base: process.env.DEPLOY_TARGET === 'pages' ? '/lightbudget/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

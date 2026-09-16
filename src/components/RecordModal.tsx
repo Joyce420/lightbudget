@@ -40,7 +40,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   defaultAccount,
 }) => {
   const [type, setType] = useState<TransactionType>('expense');
-  const [amountStr, setAmountStr] = useState<string>('38.50');
+  const [amountStr, setAmountStr] = useState<string>('0');
   const [selectedCategory, setSelectedCategory] = useState<string>('餐饮');
   const [selectedIcon, setSelectedIcon] = useState<string>('restaurant');
   const [account, setAccount] = useState<string>(defaultAccount || '现金');
@@ -330,7 +330,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
           </div>
 
           {/* Pinned Bottom Controls: Save Action & Numeric Keypad */}
-          <div className="w-full shrink-0 bg-surface-container-low/80 backdrop-blur-md pt-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] flex flex-col items-center border-t border-border-subtle/40">
+          <div className="w-full shrink-0 max-h-[42dvh] overflow-y-auto bg-surface-container-low/80 backdrop-blur-md pt-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] flex flex-col items-center border-t border-border-subtle/40">
             {/* Primary Save Button */}
             <div className="w-full px-5 mb-2">
               <button
@@ -351,7 +351,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                   key={val}
                   type="button"
                   onClick={() => handleKeyClick(val)}
-                  className="h-12 rounded-lg bg-surface text-primary font-semibold text-[22px] active:bg-surface-variant active:scale-95 flex items-center justify-center shadow-sm transition-all cursor-pointer"
+                  className="h-10 rounded-lg bg-surface text-primary font-semibold text-[22px] active:bg-surface-variant active:scale-95 flex items-center justify-center shadow-sm transition-all cursor-pointer"
                 >
                   {val}
                 </button>
@@ -361,7 +361,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                 type="button"
                 onClick={handleDeleteKey}
                 aria-label="退格"
-                className="h-12 rounded-lg bg-surface-variant/70 text-primary active:bg-surface-variant active:scale-95 flex items-center justify-center shadow-sm transition-all cursor-pointer"
+                className="h-10 rounded-lg bg-surface-variant/70 text-primary active:bg-surface-variant active:scale-95 flex items-center justify-center shadow-sm transition-all cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[22px]">backspace</span>
               </button>

@@ -265,6 +265,13 @@ export const StatisticsScreen: React.FC<StatisticsScreenProps> = ({
         </section>
 
         {/* Expense Category Breakdown Donut Card */}
+        {monthTransactions.length === 0 ? (
+          <section className="w-full bg-surface rounded-2xl p-6 shadow-sm border border-border-subtle/50 text-center">
+            <span className="material-symbols-outlined text-primary text-[34px]">insights</span>
+            <p className="text-[15px] font-semibold text-primary mt-2">记满 3 笔后，这里会生成消费分析</p>
+            <p className="text-[13px] text-muted-text mt-1">先记录几笔真实消费，再回来看看分类和趋势。</p>
+          </section>
+        ) : (
         <section className="w-full bg-surface rounded-2xl p-5 shadow-sm flex flex-col gap-3 border border-border-subtle/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
@@ -364,6 +371,7 @@ export const StatisticsScreen: React.FC<StatisticsScreenProps> = ({
             })}
           </div>
         </section>
+        )}
 
         {/* 6-Month Trend Bar Chart Card */}
         <section className="w-full bg-surface rounded-2xl p-5 shadow-sm flex flex-col gap-3 border border-border-subtle/50">

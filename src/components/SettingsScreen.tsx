@@ -82,16 +82,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-[18px] font-bold text-primary tracking-tight truncate">
-                  {cloudSyncState === 'synced' ? '云端账本' : '本机账本'}
+                  数据保存在本机
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[12px] font-semibold">
-                  {cloudSyncState === 'synced'
-                    ? '已同步'
-                    : cloudSyncState === 'connecting'
-                      ? '同步中'
-                      : cloudSyncState === 'error'
-                        ? '待重试'
-                        : '离线优先'}
+                  {cloudSyncState === 'synced' ? '已备份' : '本机保存'}
                 </span>
               </div>
               <p className="text-[13px] text-muted-text mt-0.5 flex items-center gap-1 truncate">
@@ -100,13 +94,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                     cloudSyncState === 'error' ? 'bg-expense-danger' : 'bg-secondary'
                   }`}
                 />
-                {cloudSyncState === 'synced'
-                  ? '本机与云端均已安全保存'
-                  : cloudSyncState === 'connecting'
-                    ? '正在连接安全云端…'
-                    : cloudSyncState === 'error'
-                      ? '云端暂不可用 · 本机数据不受影响'
-                      : '已安全保存在本地 · 配置后可云同步'}
+                {cloudSyncState === 'error' ? '云端备份暂不可用 · 本机数据不受影响' : '账单优先保存在本机'}
               </p>
             </div>
           </div>

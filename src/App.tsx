@@ -107,8 +107,9 @@ export default function App() {
   // Persist settings on change
   useEffect(() => {
     saveSettings(settings);
-    // Dark mode class on html/body if needed
-    if (settings.theme === 'dark') {
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+    const shouldUseDark = settings.theme === 'dark' || (settings.theme === 'auto' && prefersDark);
+    if (shouldUseDark) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');

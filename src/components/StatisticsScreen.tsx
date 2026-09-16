@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { Transaction, AppSettings } from '../types';
-import { MONTHLY_TREND_DATA } from '../data/initialData';
 import { formatCurrency } from '../utils/helpers';
 
 interface StatisticsScreenProps {
@@ -24,6 +23,20 @@ export const StatisticsScreen: React.FC<StatisticsScreenProps> = ({
 }) => {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number | null>(null);
   const [activeBarMonth, setActiveBarMonth] = useState<string | null>(null);
+
+  const monthlyTrendData = useMemo(() => {
+    const points = Array.from({ length: 6 }, (_, index) => {
+      const date = new Date(selectedYear, selectedMonth - 1 - (5 - index), 1);
+      return { year: date.getFullYear(), monthNum: date.getMonth() + 1, month: `${date.getMonth() + 1}月`, expense: 0, income: 0 };
+    });
+    transactions.forEach((tx) => {
+      const date = new Date(tx.date);
+      const point = points.find((item) => item.year === date.getFullYear() && item.monthNum === date.getMonth() + 1);
+      if (point) point[tx.type === 'expense' ? 'expense' : 'income'] += tx.amount;
+    });
+    const max = Math.max(1, ...points.flatMap((point) => [point.expense, point.income]));
+    return points.map((point) => ({ ...point, expensePct: Math.max(2, (point.expense / max) * 100), incomePct: Math.max(2, (point.income / max) * 100) }));
+  }, [transactions, selectedYear, selectedMonth]);
 
   // Month transactions
   const monthTransactions = useMemo(() => {
@@ -378,7 +391,7 @@ export const StatisticsScreen: React.FC<StatisticsScreenProps> = ({
           {/* Bar Chart Bars */}
           <div className="w-full flex flex-col gap-2 pt-2">
             <div className="h-40 w-full flex items-end justify-between px-1">
-              {MONTHLY_TREND_DATA.map((item) => {
+              {monthlyTrendData.map((item) => {
                 const isCurrent = item.monthNum === selectedMonth;
                 const isHovered = activeBarMonth === item.month;
 

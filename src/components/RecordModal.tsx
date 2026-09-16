@@ -44,7 +44,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('餐饮');
   const [selectedIcon, setSelectedIcon] = useState<string>('restaurant');
   const [account, setAccount] = useState<string>(defaultAccount || '现金');
-  const [remark, setRemark] = useState<string>('麦当劳超值双人套餐');
+  const [remark, setRemark] = useState<string>('');
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [selectedDateTime, setSelectedDateTime] = useState<string>(() =>
     toDateTimeLocal(new Date()),
@@ -78,11 +78,6 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   const handleCategorySelect = (cat: CategoryItem) => {
     setSelectedCategory(cat.name);
     setSelectedIcon(cat.icon);
-    if (cat.name === '餐饮' && (!remark || remark === '麦当劳超值双人套餐')) {
-      setRemark('麦当劳超值双人套餐');
-    } else if (!remark) {
-      setRemark(cat.name);
-    }
   };
 
   const handleSave = () => {

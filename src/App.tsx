@@ -197,6 +197,7 @@ export default function App() {
             selectedMonth={selectedMonth}
             onPrevMonth={handlePrevMonth}
             onNextMonth={handleNextMonth}
+            onSelectMonth={handleSelectMonth}
           />
         )}
 

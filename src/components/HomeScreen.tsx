@@ -26,7 +26,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const [allLedgerOpen, setAllLedgerOpen] = useState(false);
   const [selectedTxDetail, setSelectedTxDetail] = useState<Transaction | null>(null);
 
   // Filter transactions for currently selected month or search
@@ -110,9 +110,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     return Array.from(map.values()).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
   }, [currentMonthTransactions]);
 
-  const displayedGroups = showAllTransactions
-    ? groupedTransactions
-    : groupedTransactions.slice(0, 2);
+  const displayedGroups = groupedTransactions.slice(0, 2);
 
   return (
     <div className="flex-1 w-full bg-background pt-16 pb-28">
@@ -311,7 +309,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="flex items-center justify-between px-1">
             <span className="text-[18px] font-bold text-primary">最近流水</span>
             <span className="text-[13px] text-muted-text">
-              {showAllTransactions ? `共 ${currentMonthTransactions.length} 笔明细` : '近 2 日记账'}
+              {'近 2 日记账'}
             </span>
           </div>
 
@@ -413,24 +411,64 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <button
             id="view-all-tx-btn"
             type="button"
-            onClick={() => setShowAllTransactions(!showAllTransactions)}
+            onClick={() => setAllLedgerOpen(true)}
             className="w-full py-3.5 bg-surface rounded-[20px] shadow-sm flex items-center justify-center gap-1.5 text-muted-text hover:text-primary active:scale-[0.99] transition-all my-1 border border-border-subtle/50 cursor-pointer"
           >
             <span className="text-[14px] font-semibold">
-              {showAllTransactions
-                ? '收起部分账目'
-                : `查看全部账目 (共 ${transactions.length} 笔)`}
+              {`查看全部账目 (共 ${transactions.length} 笔)`}
             </span>
-            <span
-              className={`material-symbols-outlined text-[18px] transition-transform ${
-                showAllTransactions ? 'rotate-180' : ''
-              }`}
-            >
+            <span className="material-symbols-outlined text-[18px]">
               arrow_forward
             </span>
           </button>
         </div>
       </div>
+
+      {allLedgerOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background pt-[env(safe-area-inset-top)]">
+          <header className="h-16 shrink-0 px-5 flex items-center justify-between bg-background border-b border-border-subtle/50">
+            <button
+              type="button"
+              aria-label="返回首页"
+              onClick={() => setAllLedgerOpen(false)}
+              className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-primary active:bg-surface-container"
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h2 className="text-[18px] font-bold text-primary">全部账目</h2>
+            <span className="text-[13px] text-muted-text">{transactions.length} 笔</span>
+          </header>
+          <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[max(env(safe-area-inset-bottom),1rem)]">
+            {transactions.length === 0 ? (
+              <p className="text-center text-muted-text py-12">还没有账目，记下第一笔吧。</p>
+            ) : (
+              <div className="bg-surface rounded-2xl border border-border-subtle/50 divide-y divide-border-subtle/50">
+                {[...transactions]
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .map((tx) => (
+                    <button
+                      type="button"
+                      key={tx.id}
+                      onClick={() => setSelectedTxDetail(tx)}
+                      className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-surface-container-low"
+                    >
+                      <span className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined">{tx.categoryIcon || 'receipt_long'}</span>
+                      </span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-[14px] font-semibold text-primary truncate">{tx.remark || tx.category}</span>
+                        <span className="block text-[12px] text-muted-text">{tx.category} · {tx.account} · {new Date(tx.date).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      </span>
+                      <span className={`font-mono font-bold ${tx.type === 'expense' ? 'text-primary' : 'text-tertiary-container'}`}>
+                        {tx.type === 'expense' ? '-' : '+'}¥{tx.amount.toFixed(2)}
+                      </span>
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Transaction Detail Dialog */}
       {selectedTxDetail && (

@@ -36,6 +36,10 @@ jobs:
           DEPLOY_TARGET: pages
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - name: Add Android download package
+        run: |
+          mkdir -p dist/downloads
+          cp releases/lightbudget-2026-09-18.apk dist/downloads/lightbudget-android.apk
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
